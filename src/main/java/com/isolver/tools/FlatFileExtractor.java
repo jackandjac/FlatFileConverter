@@ -12,26 +12,36 @@ import java.util.List;
 public class FlatFileExtractor {
 	
 	public static void main(String args[]) throws IOException {
-		List<Record> rules =readRuleFromFile(new File("C:\\temp_dir\\rule.txt") );
-		ITextFileContent body=extractRawContent(rules,new File("C:\\\\temp_dir\\\\test_data.txt"));
-		File tar =new File("C:\\temp_dir\\res.csv");
-		toCsv(body,tar);
-//	    for(List<Record> line: body.getContent() ) {
-//	    	for(Record rec:line) {
-//	    		System.out.print("[");
-//	    	    if(rec != null) {
-//	    	    	System.out.print(rec.getContent());
-//	    	    }else {
-//	    	    	System.out.print("null");
-//	    	    }
-//	    		
-//	    		System.out.print("]");
-//	    	}
-//	    	System.out.println();
-//	    }
+
+		converter(new File("C:\\temp_dir\\rule.txt"),new File("C:\\\\temp_dir\\\\test_data.txt"),new File("C:\\temp_dir\\res.csv"));
 	}
-	// String,35;Date,25;
-	
+	/**
+	 * Extract the content from a flat file based on the rule and the write it to a csv file. 
+	 * <p>
+	 * This method read the rules of the flat file from a configuration file and then based on 
+	 * the rule extract all the content from to the flat file and write it into a csv file. 
+	 * 
+	 * @param      rule the file that contain the rules we need read the information from the flat file
+	 * @param      source The flat file that we are going to read from
+	 * @param      tar The csv file that we are going to write to
+	 * @exception  IOException  If an I/O error occurs
+	 */		
+	public static void converter(File rule,File source,File tar) throws IOException {
+		List<Record> rules =readRuleFromFile(rule);
+		ITextFileContent body=extractRawContent(rules,source);
+		toCsv(body,tar);
+	}
+
+	/**
+	 * Write the extracted content to a csv file. 
+	 * <p>
+	 * This method write the flat file content that extracted to the 
+	 * ITextFileContent and write it to the csv file. 
+	 * ITextFileContent can be extracted from extractRawContent method. 
+	 * @param      content  the extracted content that contain all the information from the flat file
+	 * @param      csv The csv file that we are going to write to
+	 * @exception  IOException  If an I/O error occurs
+	 */	
 	public static void toCsv(ITextFileContent content, File csv) throws IOException {
 		StringBuffer body =new StringBuffer("");
 		
@@ -56,6 +66,16 @@ public class FlatFileExtractor {
 	    
 	    Files.asCharSink(csv, Charset.forName("utf-8")).write(body.toString());
 	}
+	/**
+	 * read the rules from a text file
+	 * <p>
+	 * This method read the predefined rules from the text file,
+	 * and store the rules in the form of List<Record>
+	 * @param       file  the file that contains the rules
+	 * @return      the list of rules in the form of List<Record> we read from the file
+	 * @exception   IOException  If an I/O error occurs
+	 */		
+	
 	public static List<Record> readRuleFromFile(File file) throws IOException {
 
 		ArrayList<Record> rule = new ArrayList<>();
@@ -73,7 +93,16 @@ public class FlatFileExtractor {
 		}
 		return rule;
 	}
-
+	/**
+	 * Extract the flat file content based on the rules
+	 * <p>
+	 * This method extract the flat file content based on the rule that we passed in.
+	 * The result will save in a ITextFileContent instance and return 
+	 * ITextFileContent can be extracted from extractRawContent method. 
+	 * @param      rule  the rules that we will use to extract content from the flat file
+	 * @param      file The flat file that we are going read from
+	 * @exception  IOException  If an I/O error occurs
+	 */
 	public static ITextFileContent extractRawContent(List<Record> rule, File file) throws IOException {
 		ITextFileContent body = new ITextFileContent();
 
